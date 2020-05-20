@@ -71,7 +71,14 @@ class Interpret:
         shap_values = se.shap_values(self.x_test)
         shap.summary_plot(shap_values[1], features=self.x_test)  # feature_names=self.features
 
-    def lime(self, instance=None, html_file=False):
+    def lime(self, instance=None, html_file=False, num_features=2):
+        """
+
+        :param instance:
+        :param html_file:
+        :param num_features:
+        :return:
+        """
         explainer = LimeTabularExplainer(self.x_train.values, mode="classification", feature_names=self.x_train.columns,
                                          class_names=['false', 'true'], training_labels=self.y_train, discretize_continuous=True)
         if not instance:
@@ -79,7 +86,7 @@ class Interpret:
             print('Case:  ' + str(instance))
             print('Label: ' + str(self.y_test.iloc[instance]))
 
-        exp = explainer.explain_instance(self.x_test.values[instance], self.model.predict_proba, num_features=13)
+        exp = explainer.explain_instance(self.x_test.values[instance], self.model.predict_proba, num_features=num_features)
         print("Lime explanation: ")
         exp.as_pyplot_figure(label=1).show()
         if html_file:

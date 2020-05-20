@@ -63,7 +63,7 @@ def main():
     # Interpret the model
     # black_box.feature_importance()
     # black_box.shap_interpret()
-    black_box.lime(html_file=True)
+    black_box.lime(num_features=len(x_train))
 
 
 if __name__ == "__main__":
