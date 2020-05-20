@@ -4,6 +4,7 @@ from keras.layers import Dense, Dropout, BatchNormalization
 from keras.models import Sequential
 from keras.optimizers import Adam
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import LinearSVC
 
 from Models import Interpret
 from data_loader import preprocess_dataframe, split_and_normalize
@@ -55,13 +56,14 @@ def main():
     black_box = Interpret(RandomForestClassifier(n_estimators=750, random_state=1, max_depth=5))
     # black_box = Interpret(LinearSVC())
     black_box.fit(x_train, y_train)
-    prediction = black_box.predict(x_test)
+    prediction = black_box.predict(x_test, y_test)
     # Evaluate the model
     prediction_evaluation(prediction=prediction, y_test=y_test)
 
     # Interpret the model
-    black_box.feature_importance(y_test=y_test)
-    black_box.shap_interpret(y_test=y_test)
+    # black_box.feature_importance()
+    # black_box.shap_interpret()
+    black_box.lime(html_file=True)
 
 
 if __name__ == "__main__":
