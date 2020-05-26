@@ -37,12 +37,12 @@ def split_and_normalize(data, labels):
     # Split data into train and test set ( ratio 0.2 test - 0.8 train)
     X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=1234)
 
-    # Compute mean and std
-    mean = np.mean(X_train, axis=0)
-    std = np.std(X_train, axis=0)
-
-    # Standardize data
-    X_train = (X_train - mean) / std
-    X_test = (X_test - mean) / std
+    # # Compute mean and std
+    # mean = np.mean(X_train, axis=0)
+    # std = np.std(X_train, axis=0)
+    #
+    # # Standardize data
+    # X_train = (X_train - mean) / std
+    # X_test = (X_test - mean) / std
 
     return X_train, X_test, y_train, y_test
