@@ -5,7 +5,7 @@ from keras.models import Sequential
 from keras.optimizers import Adam
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
-from active_learning import create_active_learning_dataset
+from active_learning import create_dataset_splits, create_and_implement_strategy, plot_learning_curves
 from Models import Interpret
 from data_loader import preprocess_dataframe, split_and_normalize
 from utilities import prediction_evaluation
@@ -50,11 +50,17 @@ def main():
     # Preprocess the data
     data, labels = preprocess_dataframe(train_data, labels)
 
-    # Split the data into train and test and standardize their values
+    # Split the data into train and test
     x_train, x_test, y_train, y_test = split_and_normalize(data, labels)
 
-    # Collect labeled data using active learning techniques
-    # X_train, y_train = create_active_learning_dataset(x_train, y_train)
+    # Create split to apply active learning tecnhiques
+    # X, y, alibox = create_dataset_splits(data, labels)
+    # Implement each strategy
+    # strategy1_examples = create_and_implement_strategy("QueryInstanceUncertainty", X, y, alibox)
+    # strategy2_examples = create_and_implement_strategy("QueryInstanceRandom", X, y, alibox)
+    # strategy3_examples = create_and_implement_strategy("QueryInstanceQBC", X, y, alibox)
+    # Plot learning curves
+    # plot_learning_curves(strategy1_examples, strategy2_examples, strategy3_examples)
 
     black_box = Interpret(RandomForestClassifier(n_estimators=750, random_state=1, max_depth=5))
     # black_box = Interpret(LinearSVC())
