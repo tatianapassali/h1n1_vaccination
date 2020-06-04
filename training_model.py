@@ -53,6 +53,7 @@ def main():
     # Split the data into train and test
     x_train, x_test, y_train, y_test = split_and_normalize(data, labels)
 
+
     # Create split to apply active learning tecnhiques
     # X, y, alibox = create_dataset_splits(data, labels)
     # Implement each strategy

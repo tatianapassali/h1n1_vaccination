@@ -1,6 +1,7 @@
 # Import neccesary packages
 import numpy as np
 from sklearn.model_selection import train_test_split
+import pickle
 
 
 # Preprocees data of the dataframe (drop useless columns, replace string values with categorical and fill empty records with dummy value)
@@ -35,7 +36,8 @@ def preprocess_dataframe(dataframe, labels):
 
 def split_and_normalize(data, labels):
     # Split data into train and test set ( ratio 0.2 test - 0.8 train)
-    X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=1234)
+    with open("dataset", "rb") as f:
+        X_train, X_test, y_train, y_test = pickle.load(f)
 
     # # Compute mean and std
     # mean = np.mean(X_train, axis=0)
