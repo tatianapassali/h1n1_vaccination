@@ -3,9 +3,10 @@ import pandas as pd
 from keras.layers import Dense, Dropout, BatchNormalization
 from keras.models import Sequential
 from keras.optimizers import Adam
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import LinearSVC
-from active_learning import create_dataset_splits, create_and_implement_strategy, plot_learning_curves
+from active_learning import create_dataset_splits,create_and_implement_strategy, plot_learning_curves
 from Models import Interpret
 from data_loader import preprocess_dataframe, split_and_normalize
 from utilities import prediction_evaluation
@@ -50,16 +51,17 @@ def main():
     # Preprocess the data
     data, labels = preprocess_dataframe(train_data, labels)
 
+    # Run only once to create a global split for training and test saved in pickle
+    # create_dataset_splits(data, labels)
+
     # Split the data into train and test
     x_train, x_test, y_train, y_test = split_and_normalize(data, labels)
 
-
-    # Create split to apply active learning tecnhiques
-    # X, y, alibox = create_dataset_splits(data, labels)
+    # Time for Active Learning
     # Implement each strategy
-    # strategy1_examples = create_and_implement_strategy("QueryInstanceUncertainty", X, y, alibox)
-    # strategy2_examples = create_and_implement_strategy("QueryInstanceRandom", X, y, alibox)
-    # strategy3_examples = create_and_implement_strategy("QueryInstanceQBC", X, y, alibox)
+    # strategy1_examples = create_and_implement_strategy("QueryInstanceUncertainty", data, labels, queries)
+    # strategy2_examples = create_and_implement_strategy("QueryInstanceRandom", data, labels, queries)
+    # strategy3_examples = create_and_implement_strategy("QueryInstanceQBC", data, labels, queries)
     # Plot learning curves
     # plot_learning_curves(strategy1_examples, strategy2_examples, strategy3_examples)
 
