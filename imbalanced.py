@@ -7,13 +7,10 @@ from imblearn.under_sampling import RandomUnderSampler
 
 def simple_model(X_train,y_train):
     
-    #define the sampling strategy
-    o = 0.5
-    u = 0.8
-    
+
     # define the methods
-    over = SMOTE(sampling_strategy= o,  k_neighbors=7)
-    under = RandomUnderSampler(sampling_strategy= u)
+    over = SMOTE( k_neighbors=7)
+    under = RandomUnderSampler()
     
     steps = [('o', over), ('u', under)]
     pipeline = Pipeline(steps=steps)
@@ -25,11 +22,8 @@ def simple_model(X_train,y_train):
 
 def ensemble_model(X_train,y_train):
     
-    #define the sampling strategy
-    o = 0.8
-    
     # define the methods
-    over = BorderlineSMOTE(sampling_strategy= o, k_neighbors=3, kind= "borderline-1")
+    over = BorderlineSMOTE( k_neighbors=3, kind= "borderline-1")
     under = EasyEnsemble(random_state=1)
 
     steps = [('o', over), ('u', under)]
