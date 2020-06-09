@@ -2,10 +2,34 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import shap
-
+import xgboost as xgb
+from sklearn.metrics import accuracy_score
 from eli5.sklearn import PermutationImportance
 from matplotlib import pyplot as plt
 from lime.lime_tabular import LimeTabularExplainer
+from sklearn.linear_model import LogisticRegression
+from utilities import prediction_evaluation
+
+
+def white_box(x_train, y_train, x_test, y_test):
+    # White box interpretation
+    # gb = xgb.XGBClassifier(n_estimators=400, max_depth=4, base_score=0.5,
+    #                     objective='binary:logistic', random_state=123)
+    lg = LogisticRegression()
+    lg.fit(x_train, y_train)
+    pred = lg.predict(x_test)
+    prediction_evaluation(pred, y_test)
+    features = x_train.columns
+
+    weights = PermutationImportance(lg).fit(x_test, y_test)
+    model_weights = pd.DataFrame({'Features': list(features), 'Importance': weights.feature_importances_})
+    model_weights = model_weights.reindex(model_weights['Importance'].abs().sort_values(ascending=False).index)
+    model_weights = model_weights[(model_weights["Importance"] != 0)]
+    plt.figure(num=None, figsize=(8, 6), dpi=100, facecolor='w', edgecolor='k')
+    sns.barplot(x="Importance", y="Features", data=model_weights)
+    # plt.title("Intercept (Bias): " + str(self.model.intercept_[0]), loc='right')
+    plt.xticks(rotation=90)
+    plt.show()
 
 
 class Interpret:
@@ -44,10 +68,10 @@ class Interpret:
         if not self.model:
             raise Exception("There are no predictions yet!")
         weights = PermutationImportance(self.model).fit(self.x_test.values, self.y_test.values)
-        model_weights = pd.DataFrame({'Features': list(self.features), 'Importance': weights.feature_importances_})
-        model_weights = model_weights.reindex(model_weights['Importance'].abs().sort_values(ascending=False).index)
-        model_weights = model_weights[(model_weights["Importance"] != 0)]
-        self.plot(model_weights)
+        weights = pd.DataFrame({'Features': list(self.features), 'Importance': weights.feature_importances_})
+        weights = weights.reindex(weights['Importance'].abs().sort_values(ascending=False).index)
+        # weights = weights[(weights["Importance"] != 0)]
+        self.plot(weights)
 
     def plot(self, data):
         plt.figure(num=None, figsize=(8, 6), dpi=100, facecolor='w', edgecolor='k')
@@ -70,6 +94,19 @@ class Interpret:
         se = shap.TreeExplainer(self.model)  # , feature_perturbation="interventional", model_output="raw"
         shap_values = se.shap_values(self.x_test)
         shap.summary_plot(shap_values[1], features=self.x_test)  # feature_names=self.features
+
+    def surrogate(self, white_box):
+
+        white_box.fit(self.x_train, self.model.predict(self.x_train))
+        prediction = white_box.predict(self.x_test)
+        print('~~~~ Global surrogate ~~~~')
+        print("Fidelity: ", accuracy_score(self.y_test, prediction))
+        weights = PermutationImportance(white_box).fit(self.x_test.values, self.y_test.values)
+        weights = pd.DataFrame({'Features': list(self.features), 'Importance': weights.feature_importances_})
+        weights = weights.reindex(weights['Importance'].abs().sort_values(ascending=False).index)
+        weights = weights[(weights["Importance"] != 0)]
+        self.plot(weights)
+
 
     def lime(self, instance=None, html_file=False, num_features=2):
         """
