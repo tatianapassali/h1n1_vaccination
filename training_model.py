@@ -1,16 +1,16 @@
 # Import necessary packages
-
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-
-from imbalanced import ensemble_model, simple_model
-from Interpret import Interpret, white_box
+# from imbalanced import ensemble_model, simple_model
+# from Interpret import Interpret, white_box
+from Interpret import Interpret
 from data_loader import preprocess_dataframe, split_and_normalize
+# from imbalanced import simple_model, ensemble_model
 from utilities import prediction_evaluation
-
+from active_learning import create_and_implement_strategy
 SIMPLE_IMBALANCE = 0
-INTERPRET = 0
+INTERPRET = 1
 
 
 def main():
@@ -29,20 +29,29 @@ def main():
 
     # Run only once to create a global split for training and test saved in pickle
     # create_dataset_splits(data, labels)
-
-    # Split the data into train and test
-    x_train, x_test, y_train, y_test = split_and_normalize(data, labels)
-    if SIMPLE_IMBALANCE:
-        x_train, y_train = simple_model(x_train, y_train)
-    else:
-        x_train, y_train = ensemble_model(x_train, y_train)
     # Time for Active Learning
     # Implement each strategy
     # strategy1_examples = create_and_implement_strategy("QueryInstanceUncertainty", data, labels, queries)
     # strategy2_examples = create_and_implement_strategy("QueryInstanceRandom", data, labels, queries)
-    # strategy3_examples = create_and_implement_strategy("QueryInstanceQBC", data, labels, queries)
+    # strategy3_examples = create_and_implement_strategy("QueryInstanceQBC", data, labels, 1000)
     # Plot learning curves
     # plot_learning_curves(strategy1_examples, strategy2_examples, strategy3_examples)
+
+    # Split the data into train and test
+    # x_train, x_test, y_train, y_test = split_and_normalize(data, labels, "None")
+
+    # Active Learning Uncertainty Sampling Dataset
+    # x_train, x_test, y_train, y_test = split_and_normalize(data, labels, "uncertainty")
+    # Active Learning Random Sampling Dataset
+    x_train, x_test, y_train, y_test = split_and_normalize(data, labels, "random")
+    # Active Learning QBC Sampling Dataset
+    # x_train, x_test, y_train, y_test = split_and_normalize(data, labels, "qbc")
+
+    # if SIMPLE_IMBALANCE:
+    #     x_train, y_train = simple_model(x_train, y_train)
+    # else:
+    #     x_train, y_train = ensemble_model(x_train, y_train)
+
 
     # White box interpretation
     drop = ['h1n1_concern', 'income_poverty', 'household_children', 'household_adults', 'behavioral_antiviral_meds',
@@ -53,7 +62,6 @@ def main():
     # x_test = x_test.drop(drop, axis=1)
     # white_box(x_train, y_train, x_test, y_test)
     # return
-
 
     # Black box interpretation
     black_box = Interpret(RandomForestClassifier(n_estimators=750, random_state=1, max_depth=5))

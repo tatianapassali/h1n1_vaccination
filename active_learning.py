@@ -3,6 +3,7 @@ import numpy as np
 from alipy import ToolBox
 import copy
 from alipy.experiment import ExperimentAnalyser, StateIO
+import matplotlib.pyplot as plt
 
 
 def create_dataset_splits(data, labels):
@@ -98,13 +99,17 @@ def create_and_implement_strategy(strategy_name, data, labels, queries):
     stopping_criterion.reset()
     examples.append(copy.deepcopy(saver))
 
-    # Uncomment and return in ordet to save the new active learning dataset
+    # Uncomment and return in order to save the new active learning dataset
     # Save selected x_train examples
-    # X_train = X[labeled_idx, :]
+    X_train = X[labeled_idx, :]
     # Save labels for the examples
-    # y_train = y[labeled_idx, :]
+    y_train = y[labeled_idx, :]
     # Reshape target
-    # y_train = np.array(y_train).reshape(-1)
+    y_train = np.array(y_train).reshape(-1)
+
+    # Save to pickle
+    # with open('qbc_dataset','wb') as f:
+    #     pickle.dump((X_train, y_train), f)
 
     return examples
 
@@ -120,3 +125,21 @@ def plot_learning_curves(strategy1, strategy2, strategy3):
     # print(experiment_analyser)
     # Plot the learning curves
     experiment_analyser.plot_learning_curves(title='Learning Curves', std_area=True)
+
+
+def create_plots():
+    strategies = ('Uncertainty', 'QBC', 'Random', 'No Strategy')
+    y_pos = np.arange(len(strategies))
+    accuracy = [0.813, 0.815,0.803, 0.796]
+    plt.ylim({0.7,0.85})
+    plt.bar(y_pos, accuracy, align='center', alpha=0.5, width=0.4)
+    plt.xticks(y_pos, strategies)
+    plt.ylabel('Accuracy')
+    plt.xlabel('Strategies')
+
+    plt.title('Comparison between AL approaches and Non AL approach')
+    plt.savefig("Comparison.png")
+    plt.show()
+
+
+# create_plots()
