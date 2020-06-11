@@ -23,7 +23,7 @@ def simple_model(X_train,y_train):
 def ensemble_model(X_train,y_train):
     
     # define the methods
-    over = BorderlineSMOTE( k_neighbors=3, kind= "borderline-1")
+    over = BorderlineSMOTE( k_neighbors=7, kind= "borderline-1")
     under = EasyEnsemble(random_state=1)
 
     steps = [('o', over), ('u', under)]
